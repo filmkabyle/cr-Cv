@@ -112,7 +112,7 @@
         .template-modern .profile-pic { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--white); object-fit: cover; display: block; margin: 0 auto 20px auto; }
         
         @media (max-width: 1200px) { .main-container { flex-direction: column; } .editor-panel { max-width: none; position: relative; top: 0; max-height: none; } #cv-wrapper { padding: 20px; } }
-        @media (max-width: 768px) { .template-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } #cv-template { width: 100%; min-height: auto; padding: 15px; font-size: 12px; } #cv-template h1 { font-size: 20pt !important; } .template-modern { flex-direction: column; } .template-modern .cv-sidebar, .template-modern .cv-main { width: 100%; padding: 15px; box-sizing: border-box; } }
+        @media (max-width: 768px) { #cv-template { width: 100%; min-height: auto; padding: 15px; font-size: 12px; } #cv-template h1 { font-size: 20pt !important; } .template-modern { flex-direction: column; } .template-modern .cv-sidebar, .template-modern .cv-main { width: 100%; padding: 15px; box-sizing: border-box; } .template-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } }
     </style>
 </head>
 <body>
@@ -199,7 +199,6 @@
 
         // --- I18N (TRANSLATIONS) & CONFIGURATION ---
         const translations = {
-            // Existing translations...
             pageTitle: { en: 'Professional CV Builder', ar: 'منشئ السيرة الذاتية الاحترافي', fr: 'Créateur de CV Professionnel' },
             pageSubtitle: { en: 'Start by choosing a template that represents you and your career.', ar: 'ابدأ باختيار القالب الذي يعبر عنك وعن مسيرتك المهنية', fr: 'Commencez par choisir un modèle qui vous représente.' },
             step1Title: { en: '1. Choose Your Template', ar: '1. اختر القالب المناسب لك', fr: '1. Choisissez votre modèle' },
@@ -250,7 +249,6 @@
             projectNameLabel: { en: 'Project Name', ar: 'اسم المشروع', fr: 'Nom du projet' },
             templateNameClassic: { en: 'Classic', ar: 'كلاسيكي', fr: 'Classique' },
             templateNameModern: { en: 'Modern', ar: 'حديث', fr: 'Moderne' },
-            // ... add more template names if needed
         };
         
         const templates = [
@@ -258,19 +256,16 @@
             { id: 'template-modern', nameKey: 'templateNameModern', thumb: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 141'%3E%3Crect width='100' height='141' fill='%23fff'/%3E%3Crect width='35' height='141' fill='%232c3e50'/%3E%3Ccircle cx='17.5' cy='25' r='12' fill='%23fff'/%3E%3Crect x='45' y='15' width='45' height='10' fill='%23e0e0e0'/%3E%3Crect x='45' y='30' width='35' height='5' fill='%23ccc'/%3E%3Crect x='45' y='50' width='50' height='3' fill='%23ccc'/%3E%3C/svg%3E" },
         ];
         
-        // --- DOM ELEMENTS & STATE ---
         const dom = {
             langSwitcher: document.getElementById('lang-switcher'),
             cvLangSelect: document.getElementById('cv-lang-select'),
             templateGrid: document.getElementById('template-grid'),
             cvTemplate: document.getElementById('cv-template'),
             form: document.getElementById('cv-form'),
-            // Add other frequently used elements here...
         };
 
         let photoDataUrl = '', debounceTimer;
 
-        // --- HELPER FUNCTIONS ---
         const E = (tag, attr = {}, children = []) => {
             const el = document.createElement(tag);
             Object.entries(attr).forEach(([key, value]) => el.setAttribute(key, value));
@@ -281,8 +276,6 @@
         };
         
         const getCurrentLang = () => dom.langSwitcher.value;
-
-        // --- CORE APPLICATION LOGIC ---
         
         const setLanguage = (lang) => {
             document.documentElement.lang = lang;
@@ -292,7 +285,6 @@
                 const key = el.getAttribute('data-i18n-key');
                 if (translations[key]?.[lang]) {
                     const icon = el.querySelector('svg');
-                    // Clear existing text nodes to prevent duplication
                     Array.from(el.childNodes).forEach(node => {
                         if (node.nodeType === 3) node.remove();
                     });
@@ -394,10 +386,10 @@
                 document.getElementById('photo-preview-container').style.display = 'block';
             }
 
-            data.experiences.forEach(item => addExperience(item));
-            data.educations.forEach(item => addEducation(item));
-            data.projects.forEach(item => addProject(item));
-            data.languages.forEach(item => addLanguage(item));
+            if (data.experiences) data.experiences.forEach(item => addExperience(item));
+            if (data.educations) data.educations.forEach(item => addEducation(item));
+            if (data.projects) data.projects.forEach(item => addProject(item));
+            if (data.languages) data.languages.forEach(item => addLanguage(item));
 
             debouncedUpdate();
         };
@@ -456,7 +448,6 @@
             
             removeBtn.onclick = () => { newSection.remove(); debouncedUpdate(); };
             
-            // Populate fields if data is provided
             Object.keys(data).forEach(key => {
                 const input = newSection.querySelector(`[data-type="${key}"]`);
                 if(input) input.value = data[key];
@@ -489,8 +480,6 @@
             E('div', { class: 'form-group' }, [E('label', {}, [translations.levelLabel[lang]]), E('select', { 'data-type': 'level' }, [ E('option', {value: 'Beginner'}, ['Beginner']), E('option', {value: 'Intermediate'}, ['Intermediate']), E('option', {value: 'Advanced'}, ['Advanced']), E('option', {value: 'Native'}, ['Native']), ])])
         ], data);
 
-
-        // --- EVENT LISTENERS SETUP ---
         function setupEventListeners() {
             dom.form.addEventListener('input', debouncedUpdate);
             dom.langSwitcher.addEventListener('change', (e) => setLanguage(e.target.value));
@@ -536,6 +525,7 @@
                 debouncedUpdate();
             });
 
+            // --- START: CORRECTED PDF DOWNLOAD CODE ---
             document.getElementById('download-pdf').addEventListener('click', function () {
                 const downloadBtn = this;
                 downloadBtn.disabled = true;
@@ -544,38 +534,51 @@
                 const originalShadow = dom.cvTemplate.style.boxShadow;
                 dom.cvTemplate.style.boxShadow = 'none';
 
-                html2canvas(dom.cvTemplate, { scale: 3, useCORS: true, logging: false })
-                    .then(canvas => {
-                        const { jsPDF } = window.jspdf;
-                        const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
-                        const imgData = canvas.toDataURL('image/png');
-                        const pdfWidth = pdf.internal.pageSize.getWidth();
-                        const pdfHeight = pdf.internal.pageSize.getHeight();
-                        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                        
-                        const fileName = document.getElementById('name').value.trim().replace(/ /g, '_') || 'CV';
-                        pdf.save(`${fileName}.pdf`);
-                    })
-                    .catch(err => {
-                        console.error("PDF generation failed:", err);
-                        alert("An error occurred while generating the PDF.");
-                    })
-                    .finally(() => {
-                        dom.cvTemplate.style.boxShadow = originalShadow;
-                        downloadBtn.disabled = false;
-                        downloadBtn.classList.remove('loading');
-                    });
+                // Use improved settings for html2canvas for better accuracy
+                html2canvas(dom.cvTemplate, { 
+                    scale: 3, 
+                    useCORS: true, 
+                    logging: false,
+                    windowWidth: dom.cvTemplate.scrollWidth,
+                    windowHeight: dom.cvTemplate.scrollHeight
+                })
+                .then(canvas => {
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+                    
+                    const imgData = canvas.toDataURL('image/png', 1.0);
+                    
+                    // Calculate the aspect ratio to maintain proportions
+                    const pdfWidth = pdf.internal.pageSize.getWidth(); // A4 width in mm
+                    const canvasAspectRatio = canvas.height / canvas.width;
+                    const pdfHeight = pdfWidth * canvasAspectRatio;
+
+                    // Add the image to the PDF with the correct dimensions
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    
+                    const fileName = (document.getElementById('name').value.trim() || 'CV').replace(/ /g, '_');
+                    pdf.save(`${fileName}.pdf`);
+                })
+                .catch(err => {
+                    console.error("PDF generation failed:", err);
+                    alert("حدث خطأ أثناء إنشاء ملف PDF. يرجى المحاولة مرة أخرى.");
+                })
+                .finally(() => {
+                    dom.cvTemplate.style.boxShadow = originalShadow;
+                    downloadBtn.disabled = false;
+                    downloadBtn.classList.remove('loading');
+                });
             });
+            // --- END: CORRECTED PDF DOWNLOAD CODE ---
         }
         
-        // --- INITIALIZATION ---
         const init = () => {
             const savedLang = localStorage.getItem('cvBuilderLang') || 'ar';
             dom.langSwitcher.value = savedLang;
             
             setupEventListeners();
             loadDataFromLocalStorage();
-            setLanguage(savedLang); // This will also trigger the first update
+            setLanguage(savedLang);
         };
 
         init();
