@@ -1,588 +1,322 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n-key="pageTitle">منشئ السيرة الذاتية الاحترافي</title>
-    
-    <!-- SEO and Metadata -->
-    <meta name="description" content="أنشئ سيرتك الذاتية الاحترافية مجاناً في دقائق. اختر من بين مجموعة من القوالب الحديثة وقم بتخصيصها بسهولة وتنزيلها كملف PDF.">
-    <meta name="keywords" content="cv builder, resume maker, free cv, سيرة ذاتية, منشئ السيرة الذاتية, cv مجاني, تصميم سيرة ذاتية">
-    <meta property="og:title" content="منشئ السيرة الذاتية الاحترافي">
-    <meta property="og:description" content="أنشئ سيرتك الذاتية بسهولة وقم بتنزيلها كملف PDF.">
-    <meta property="og:type" content="website">
-    <!--  <meta property="og:image" content="URL_to_a_preview_image.jpg"> -->
+    <title>Elegant CV Builder | صانع السيرة الذاتية الأنيق</title>
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
-    
-    <!-- External Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5gI9kLmbG0C+wFjrBgHiNPZIIA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React CDN -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+
+    <!-- Babel CDN (for JSX) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- PDF Generation (jsPDF & html2canvas) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Styles and Fonts -->
     <style>
-        /* All previous correct CSS is included here */
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cairo:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', 'Cairo', sans-serif;
+            background-color: #F8F9FA;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
         :root {
-            --primary-color: #2c5282; --secondary-color: #2b6cb0; --accent-color: #38a169;
-            --light-gray: #f7fafc; --dark-gray: #2d3748; --border-color: #e2e8f0; --white: #ffffff; --danger-color: #e53e3e; --subtle-gray: #718096;
+            --primary: #3B82F6;
+            --primary-hover: #2563EB;
+            --secondary-bg: #FFFFFF;
+            --border-color: #E5E7EB;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --input-bg: #F9FAFB;
         }
-        body { background-color: var(--light-gray); color: var(--dark-gray); margin: 0; line-height: 1.6; transition: font-family 0.3s; }
-        html[lang="ar"] body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
-        html:not([lang="ar"]) body { font-family: 'Roboto', 'Helvetica', sans-serif; }
-        .page-container { max-width: 1800px; margin: 0 auto; padding: 20px; }
-        .site-header { display: flex; justify-content: flex-end; align-items: center; padding: 0 20px 10px; }
-        #lang-switcher { padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 14px; background: white; }
-        header { text-align: center; margin-bottom: 40px; }
-        header h1 { color: var(--primary-color); font-weight: 700; font-size: 2.5rem; }
-        header p { font-size: 1.1rem; color: #718096; }
-        footer { text-align: center; padding: 20px; margin-top: 40px; color: #a0aec0; font-size: 0.9rem; }
-        .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        #template-selection-page h2 { text-align: center; font-size: 1.8rem; margin-bottom: 30px; }
-        .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 25px; justify-content: center; }
-        .template-thumbnail { cursor: pointer; border: 3px solid var(--border-color); border-radius: 8px; transition: all 0.3s ease; position: relative; background: var(--white); overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .template-thumbnail:hover, .template-thumbnail.selected { border-color: var(--secondary-color); transform: translateY(-5px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
-        .template-thumbnail img { width: 100%; height: 226px; object-fit: cover; display: block; border-bottom: 1px solid var(--border-color); background-color: #f0f2f5;}
-        .template-thumbnail span { display: block; text-align: center; font-size: 16px; font-weight: 500; padding: 12px; }
-        
-        .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-        .back-btn { background: var(--dark-gray); color: var(--white); border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; transition: background 0.3s; }
-        .back-btn:hover { background: #000; }
-        
-        .main-container { display: flex; flex-wrap: nowrap; gap: 25px; align-items: flex-start; }
-        .editor-panel { flex: 1; min-width: 400px; max-width: 550px; background: var(--white); padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); position: sticky; top: 20px; max-height: 90vh; overflow-y: auto; }
-        .editor-panel .section-header-wrapper { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); margin-bottom: 20px; }
-        .editor-panel h3 { color: var(--primary-color); padding-bottom: 10px; margin: 0; display: flex; align-items: center; gap: 10px; font-size: 1.2rem; }
-        #clear-form-btn { background: none; border: 1px solid var(--subtle-gray); color: var(--subtle-gray); font-size: 12px; padding: 5px 10px; border-radius: 5px; cursor: pointer; transition: all 0.2s; }
-        #clear-form-btn:hover { background: var(--danger-color); color: white; border-color: var(--danger-color); }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; transition: border-color 0.3s; background: #fdfdff; font-size: 1rem; }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(44, 82, 130, 0.2); }
-        
-        #photo-upload-label { cursor: pointer; background: #f0f2f5; padding: 12px; text-align: center; border-radius: 6px; border: 2px dashed var(--border-color); display: block; transition: all 0.2s; }
-        #photo-upload-label:hover { border-color: var(--secondary-color); }
-        #photo-preview-container { margin-top: 15px; position: relative; display: none; width: fit-content; }
-        #photo-preview { max-width: 120px; border-radius: 8px; border: 1px solid var(--border-color); }
-        #remove-photo-btn { position: absolute; top: -10px; background: var(--danger-color); color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-weight: bold; }
-        html[dir="rtl"] #remove-photo-btn { left: -10px; right: auto; }
-        html[dir="ltr"] #remove-photo-btn { right: -10px; left: auto; }
-        
-        .color-picker-wrapper { display: flex; align-items: center; gap: 10px; }
-        .color-picker-wrapper input[type="color"] { width: 50px; height: 35px; border: none; padding: 0; border-radius: 6px; cursor: pointer; }
-        
-        .dynamic-section { border: 1px solid #e9ecef; padding: 15px; margin-bottom: 15px; border-radius: 8px; position: relative; background: #fafbfc; }
-        .remove-btn { position: absolute; top: 10px; background: var(--danger-color); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: background 0.3s; z-index: 10; }
-        html[dir="rtl"] .remove-btn { left: 10px; right: auto; }
-        html[dir="ltr"] .remove-btn { right: 10px; left: auto; }
-        .remove-btn:hover { background: #c53030; }
-        .add-btn { background-color: var(--accent-color); color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; transition: background-color 0.3s; font-weight: 500; width: 100%; text-align: center; }
-        .add-btn:hover { background-color: #2f855a; }
-        
-        .preview-panel { flex: 1.5; min-width: 500px; }
-        #cv-wrapper { background: #e2e8f0; padding: 40px; border-radius: 8px; }
-        #cv-template { width: 210mm; min-height: 297mm; box-sizing: border-box; background: white; color: #333; transition: all 0.4s ease-in-out; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-        .cv-section h3 { display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--primary-color); padding-bottom: 8px; margin-bottom: 15px; }
-        .icon { width: 20px; height: 20px; fill: var(--primary-color); }
-        
-        .download-btn { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 450px; margin: 40px auto; padding: 15px; font-size: 18px; font-weight: 700; background-color: var(--secondary-color); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 10px rgba(43, 108, 176, 0.4); position: relative; }
-        .download-btn:hover:not(:disabled) { background-color: var(--primary-color); transform: translateY(-3px); box-shadow: 0 7px 15px rgba(44, 82, 130, 0.5); }
-        .download-btn:disabled { background-color: #a0aec0; cursor: not-allowed; transform: none; box-shadow: none; }
-        .download-btn .spinner { display: none; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
-        .download-btn.loading .spinner { display: block; }
-        .download-btn.loading .btn-text { visibility: hidden; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .cv-preview {
+            width: 100%; 
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
 
-        /* --- ALL TEMPLATE STYLES --- */
-        .template-classic { padding: 30mm 20mm; }
-        .template-classic .cv-header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 15px; }
-        .template-classic h1 { color: var(--primary-color); }
+        @media (min-width: 1024px) { /* lg screens */
+            .cv-preview {
+                width: 210mm;
+                height: 297mm;
+            }
+        }
         
-        .template-modern { display: flex; padding: 0; }
-        .template-modern .cv-sidebar { width: 70mm; background-color: var(--primary-color); color: white; padding: 25mm 10mm; }
-        .template-modern .cv-sidebar h3 { color: white; border-bottom-color: rgba(255, 255, 255, 0.5); }
-        .template-modern .cv-sidebar .icon { fill: white; }
-        .template-modern .cv-main { width: 140mm; padding: 25mm 15mm; }
-        .template-modern .profile-pic { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--white); object-fit: cover; display: block; margin: 0 auto 20px auto; }
-        
-        @media (max-width: 1200px) { .main-container { flex-direction: column; } .editor-panel { max-width: none; position: relative; top: 0; max-height: none; } #cv-wrapper { padding: 20px; } }
-        @media (max-width: 768px) { #cv-template { width: 100%; min-height: auto; padding: 15px; font-size: 12px; } #cv-template h1 { font-size: 20pt !important; } .template-modern { flex-direction: column; } .template-modern .cv-sidebar, .template-modern .cv-main { width: 100%; padding: 15px; box-sizing: border-box; } .template-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-    <!-- SVG ICONS DEFINITION -->
-    <svg width="0" height="0" style="position:absolute"> <defs> <symbol id="icon-summary" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></symbol> <symbol id="icon-experience" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-2 .89-2 2v11c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zM10 4h4v2h-4V4zm10 15H4V8h16v11z"/></symbol> <symbol id="icon-education" viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></symbol> <symbol id="icon-skills" viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6.3 6.3 9 1.8 4.5c-1.1 2.4-.8 5.4 1.3 7.4 1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l1.2-1.2c.4-.4.4-1 0-1.4z"/></symbol> <symbol id="icon-languages" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 8C5.23 6.44 6.76 5.16 8.6 4.44 8 5.55 7.54 6.75 7.21 8H4.26zm-.17 4c.02-.33.04-.66.04-1s-.02-.67-.04-1h4.04c-.05.33-.08.66-.09 1s.04.67.09 1H4.09zm3.56 4h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm3.48 3.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zm4.1-3.96h-4.04c.05-.33.08-.66.09-1s-.04-.67-.09-1h4.04c.02.33.04.66.04 1s-.02.67-.04 1z"/></symbol> <symbol id="icon-projects" viewBox="0 0 24 24"><path d="M22 7V5h-2V2h-3v3H7V2H4v3H2v2h2v10H2v2h2v3h3v-3h10v3h3v-3h2v-2h-2V7h2zM7 7h10v10H7V7z"/></symbol> </defs> </svg>
+    <div id="root"></div>
 
-    <div class="page-container">
-        <div class="site-header">
-            <div class="lang-switcher-container">
-                <select id="lang-switcher">
-                    <option value="en">English</option>
-                    <option value="ar">العربية</option>
-                    <option value="fr">Français</option>
-                </select>
-            </div>
-        </div>
-        
-        <div id="template-selection-page" class="page active">
-            <header>
-                <h1 data-i18n-key="pageTitle"></h1>
-                <p data-i18n-key="pageSubtitle"></p>
-            </header>
-            <div class="template-selector">
-                <h2 data-i18n-key="step1Title"></h2>
-                <div class="template-grid" id="template-grid"></div>
-            </div>
-        </div>
-        
-        <div id="editor-page" class="page">
-            <div class="editor-header">
-                <h2 data-i18n-key="step2Title"></h2>
-                <button id="back-to-templates" class="back-btn" data-i18n-key="changeTemplate"></button>
-            </div>
-            
-            <div class="main-container">
-                <div class="editor-panel">
-                    <form id="cv-form" onsubmit="return false;">
-                        <div class="section-header-wrapper">
-                            <h3 data-i18n-key="customizeTemplate"></h3>
-                            <button type="button" id="clear-form-btn" data-i18n-key="clearForm"></button>
-                        </div>
-                        <div class="form-group"><label for="cv-lang-select" data-i18n-key="cvLanguageLabel"></label><select id="cv-lang-select"><option value="en">English</option><option value="ar">العربية</option><option value="fr">Français</option></select></div>
-                        <div class="form-group"><label for="primary-color" data-i18n-key="primaryColorLabel"></label><div class="color-picker-wrapper"><input type="color" id="primary-color" value="#2c5282"><span data-i18n-key="pickColor"></span></div></div>
-                        <div class="form-group"><label for="font-select" data-i18n-key="fontFamilyLabel"></label><select id="font-select"><option value="'IBM Plex Sans Arabic', sans-serif">IBM Plex (عربي)</option><option value="'Cairo', sans-serif">Cairo (عربي)</option><option value="'Roboto', sans-serif">Roboto (لاتيني)</option><option value="'Lato', sans-serif">Lato (لاتيني)</option></select></div>
-                        
-                        <h3><svg class="icon"><use xlink:href="#icon-summary"></use></svg><span data-i18n-key="basicInfo"></span></h3>
-                        <div class="form-group"><label for="photo" data-i18n-key="profilePhotoLabel"></label><input type="file" id="photo" accept="image/*" style="display:none;"><label for="photo" id="photo-upload-label" data-i18n-key="clickToUpload"></label><div id="photo-preview-container"><img id="photo-preview" src="" alt="Photo Preview"><button type="button" id="remove-photo-btn" title="Remove Photo" aria-label="Remove Photo">×</button></div></div>
-                        <div class="form-group"><label for="name" data-i18n-key="fullNameLabel"></label><input type="text" id="name" data-i18n-placeholder-key="fullNamePlaceholder"></div>
-                        <div class="form-group"><label for="title" data-i18n-key="jobTitleLabel"></label><input type="text" id="title" data-i18n-placeholder-key="jobTitlePlaceholder"></div>
-                        <div class="form-group"><label for="phone" data-i18n-key="phoneLabel"></label><input type="tel" id="phone"></div>
-                        <div class="form-group"><label for="email" data-i18n-key="emailLabel"></label><input type="email" id="email"></div>
-                        <div class="form-group"><label for="address" data-i18n-key="addressLabel"></label><input type="text" id="address" data-i18n-placeholder-key="addressPlaceholder"></div>
-                        <div class="form-group"><label for="summary" data-i18n-key="summaryLabel"></label><textarea id="summary" rows="5" data-i18n-placeholder-key="summaryPlaceholder"></textarea></div>
-                        
-                        <h3><svg class="icon"><use xlink:href="#icon-experience"></use></svg><span data-i18n-key="experienceSectionTitle"></span></h3>
-                        <div id="experience-section"></div><button type="button" class="add-btn" data-action="add-experience" data-i18n-key="addExperience"></button>
-                        
-                        <h3><svg class="icon"><use xlink:href="#icon-education"></use></svg><span data-i18n-key="educationSectionTitle"></span></h3>
-                        <div id="education-section"></div><button type="button" class="add-btn" data-action="add-education" data-i18n-key="addEducation"></button>
-                        
-                        <h3><svg class="icon"><use xlink:href="#icon-projects"></use></svg><span data-i18n-key="projectsSectionTitle"></span></h3>
-                        <div id="project-section"></div><button type="button" class="add-btn" data-action="add-project" data-i18n-key="addProject"></button>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { jsPDF } = window.jspdf;
 
-                        <h3><svg class="icon"><use xlink:href="#icon-skills"></use></svg><span data-i18n-key="skillsSectionTitle"></span></h3>
-                        <div class="form-group"><label for="skills" data-i18n-key="skillsLabel"></label><textarea id="skills" rows="3" data-i18n-placeholder-key="skillsPlaceholder"></textarea></div>
-
-                        <h3><svg class="icon"><use xlink:href="#icon-languages"></use></svg><span data-i18n-key="languagesSectionTitle"></span></h3>
-                        <div id="language-section"></div><button type="button" class="add-btn" data-action="add-language" data-i18n-key="addLanguage"></button>
-                    </form>
-                </div>
-                <div class="preview-panel">
-                    <div id="cv-wrapper"><div id="cv-template"></div></div>
-                    <button class="download-btn" id="download-pdf"><span class="btn-text" data-i18n-key="step3Download"></span><div class="spinner"></div></button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <footer><p data-i18n-key="footerText"></p></footer>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-
-        // --- I18N (TRANSLATIONS) & CONFIGURATION ---
+        // --- I18N Data ---
         const translations = {
-            pageTitle: { en: 'Professional CV Builder', ar: 'منشئ السيرة الذاتية الاحترافي', fr: 'Créateur de CV Professionnel' },
-            pageSubtitle: { en: 'Start by choosing a template that represents you and your career.', ar: 'ابدأ باختيار القالب الذي يعبر عنك وعن مسيرتك المهنية', fr: 'Commencez par choisir un modèle qui vous représente.' },
-            step1Title: { en: '1. Choose Your Template', ar: '1. اختر القالب المناسب لك', fr: '1. Choisissez votre modèle' },
-            step2Title: { en: '2. Fill in Your Details', ar: '2. املأ بياناتك الآن', fr: '2. Remplissez vos informations' },
-            changeTemplate: { en: 'Change Template', ar: 'تغيير القالب', fr: 'Changer de modèle' },
-            clearForm: { en: 'Clear Data', ar: 'مسح البيانات', fr: 'Effacer les données' },
-            customizeTemplate: { en: 'Customize Template', ar: 'تخصيص القالب', fr: 'Personnaliser le modèle' },
-            cvLanguageLabel: { en: 'CV Language', ar: 'لغة السيرة الذاتية', fr: 'Langue du CV' },
-            primaryColorLabel: { en: 'Primary Color', ar: 'اللون الرئيسي', fr: 'Couleur principale' },
-            fontFamilyLabel: { en: 'Font Family', ar: 'نوع الخط', fr: 'Police de caractères' },
-            pickColor: { en: 'Pick your favorite color', ar: 'اختر اللون الذي تفضله', fr: 'Choisissez votre couleur' },
-            basicInfo: { en: 'Basic Information', ar: 'المعلومات الأساسية', fr: 'Informations de base' },
-            profilePhotoLabel: { en: 'Profile Photo (Optional)', ar: 'الصورة الشخصية (اختياري)', fr: 'Photo de profil (Optionnel)' },
-            clickToUpload: { en: 'Click here to select a photo', ar: 'انقر هنا لاختيار صورة', fr: 'Cliquez ici pour choisir une photo' },
-            fullNameLabel: { en: 'Full Name', ar: 'الاسم الكامل', fr: 'Nom et prénom' },
-            jobTitleLabel: { en: 'Job Title', ar: 'المسمى الوظيفي', fr: 'Titre du poste' },
-            companyLabel: { en: 'Company', ar: 'الشركة', fr: 'Entreprise' },
-            datesLabel: { en: 'Dates (e.g., 2020 - Present)', ar: 'التواريخ (مثال: 2020 - الآن)', fr: 'Dates (ex: 2020 - Présent)' },
-            descriptionLabel: { en: 'Description', ar: 'الوصف', fr: 'Description' },
-            phoneLabel: { en: 'Phone Number', ar: 'رقم الهاتف', fr: 'Numéro de téléphone' },
-            emailLabel: { en: 'Email Address', ar: 'البريد الإلكتروني', fr: 'Adresse e-mail' },
-            addressLabel: { en: 'Address', ar: 'العنوان', fr: 'Adresse' },
-            summaryLabel: { en: 'Personal Summary', ar: 'الملخص الشخصي', fr: 'Résumé personnel' },
-            addExperience: { en: '+ Add Experience', ar: '+ إضافة خبرة', fr: '+ Ajouter une expérience' },
-            addEducation: { en: '+ Add Education', ar: '+ إضافة مؤهل علمي', fr: '+ Ajouter une formation' },
-            addProject: { en: '+ Add Project', ar: '+ إضافة مشروع', fr: '+ Ajouter un projet' },
-            skillsLabel: { en: 'Skills (comma-separated)', ar: 'المهارات (افصل بينها بفاصلة)', fr: 'Compétences (séparées par des virgules)' },
-            addLanguage: { en: '+ Add Language', ar: '+ إضافة لغة', fr: '+ Ajouter une langue' },
-            step3Download: { en: '3. Download CV (PDF)', ar: '3. تحميل السيرة الذاتية (PDF)', fr: '3. Télécharger le CV (PDF)' },
-            footerText: { en: 'Developed kaced tech - All rights reserved © 2025', ar: 'تم التطوير kaced tech - جميع الحقوق محفوظة © 2025', fr: 'Développé kaced tech- Tous droits réservés © 2025' },
-            fullNamePlaceholder: { en: 'e.g., John Doe', ar: 'مثال: سارة عبدالله', fr: 'ex: Jean Dupont' },
-            jobTitlePlaceholder: { en: 'e.g., Digital Marketing Manager', ar: 'مثال: مديرة تسويق رقمي', fr: 'ex: Responsable Marketing Digital' },
-            addressPlaceholder: { en: 'City, Country', ar: 'المدينة، الدولة', fr: 'Ville, Pays' },
-            summaryPlaceholder: { en: 'A professional summary about you...', ar: 'نبذة احترافية عنك...', fr: 'Un résumé professionnel sur vous...' },
-            skillsPlaceholder: { en: 'HTML, CSS, Leadership, Project Management', ar: 'HTML, CSS, القيادة, إدارة المشاريع', fr: 'HTML, CSS, Leadership, Gestion de projet' },
-            summarySectionTitle: { en: 'Summary', ar: 'الملخص الشخصي', fr: 'Résumé' },
-            experienceSectionTitle: { en: 'Work Experience', ar: 'الخبرة العملية', fr: 'Expérience Professionnelle' },
-            educationSectionTitle: { en: 'Education', ar: 'التعليم', fr: 'Formation' },
-            projectsSectionTitle: { en: 'Projects', ar: 'المشاريع', fr: 'Projets' },
-            skillsSectionTitle: { en: 'Skills', ar: 'المهارات', fr: 'Compétences' },
-            languagesSectionTitle: { en: 'Languages', ar: 'اللغات', fr: 'Langues' },
-            contactSectionTitle: { en: 'Contact', ar: 'التواصل', fr: 'Contact' },
-            degreeLabel: { en: 'Degree / Certificate', ar: 'الشهادة / المؤهل', fr: 'Diplôme / Certificat' },
-            universityLabel: { en: 'Institution / University', ar: 'المؤسسة / الجامعة', fr: 'Établissement / Université' },
-            eduDatesLabel: { en: 'Dates', ar: 'التواريخ', fr: 'Dates' },
-            languageLabel: { en: 'Language', ar: 'اللغة', fr: 'Langue' },
-            levelLabel: { en: 'Level', ar: 'المستوى', fr: 'Niveau' },
-            projectNameLabel: { en: 'Project Name', ar: 'اسم المشروع', fr: 'Nom du projet' },
-            templateNameClassic: { en: 'Classic', ar: 'كلاسيكي', fr: 'Classique' },
-            templateNameModern: { en: 'Modern', ar: 'حديث', fr: 'Moderne' },
-        };
-        
-        const templates = [
-            { id: 'template-classic', nameKey: 'templateNameClassic', thumb: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 141'%3E%3Crect width='100' height='141' fill='%23fff'/%3E%3Crect x='10' y='10' width='80' height='15' fill='%23e0e0e0'/%3E%3Crect x='10' y='30' width='80' height='5' fill='%23ccc'/%3E%3Crect x='10' y='45' width='30' height='8' fill='%23e0e0e0'/%3E%3Crect x='10' y='60' width='80' height='2' fill='%23ccc'/%3E%3Crect x='10' y='65' width='80' height='2' fill='%23ccc'/%3E%3Crect x='10' y='80' width='30' height='8' fill='%23e0e0e0'/%3E%3Crect x='10' y='95' width='80' height='2' fill='%23ccc'/%3E%3C/svg%3E" },
-            { id: 'template-modern', nameKey: 'templateNameModern', thumb: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 141'%3E%3Crect width='100' height='141' fill='%23fff'/%3E%3Crect width='35' height='141' fill='%232c3e50'/%3E%3Ccircle cx='17.5' cy='25' r='12' fill='%23fff'/%3E%3Crect x='45' y='15' width='45' height='10' fill='%23e0e0e0'/%3E%3Crect x='45' y='30' width='35' height='5' fill='%23ccc'/%3E%3Crect x='45' y='50' width='50' height='3' fill='%23ccc'/%3E%3C/svg%3E" },
-        ];
-        
-        const dom = {
-            langSwitcher: document.getElementById('lang-switcher'),
-            cvLangSelect: document.getElementById('cv-lang-select'),
-            templateGrid: document.getElementById('template-grid'),
-            cvTemplate: document.getElementById('cv-template'),
-            form: document.getElementById('cv-form'),
+             en: { title: "Elegant CV Builder", personalInfo: "Personal Information", profilePicture: "Profile Picture", fullName: "Full Name", jobTitle: "Job Title", email: "Email Address", phone: "Phone Number", address: "Address", summary: "Professional Summary", summaryPlaceholder: "A brief, compelling summary of your career...", experience: "Work Experience", employer: "Employer", dateFrom: "From", dateTo: "To", present: "Present", description: "Key Responsibilities & Achievements", addExperience: "Add Experience", education: "Education", institution: "Institution", degree: "Degree / Field of Study", addEducation: "Add Education", skills: "Skills", skillsPlaceholder: "e.g., Project Management", addSkill: "Add Skill", customization: "Customization", template: "Template", modern: "Modern", classic: "Classic", creative: "Creative", accentColor: "Accent Color", font: "Font", actions: "Actions", downloadPDF: "Download PDF", preview: "Live Preview", language: "Language" },
+             ar: { title: "صانع السيرة الذاتية الأنيق", personalInfo: "المعلومات الشخصية", profilePicture: "الصورة الشخصية", fullName: "الاسم الكامل", jobTitle: "المسمى الوظيفي", email: "البريد الإلكتروني", phone: "رقم الهاتف", address: "العنوان", summary: "الملخص الاحترافي", summaryPlaceholder: "ملخص موجز ومقنع لمسيرتك المهنية...", experience: "الخبرة العملية", employer: "صاحب العمل", dateFrom: "من", dateTo: "إلى", present: "حتى الآن", description: "المسؤوليات والإنجازات الرئيسية", addExperience: "إضافة خبرة", education: "التعليم", institution: "المؤسسة التعليمية", degree: "الشهادة / مجال الدراسة", addEducation: "إضافة تعليم", skills: "المهارات", skillsPlaceholder: "مثال: إدارة المشاريع", addSkill: "إضافة مهارة", customization: "تخصيص", template: "القالب", modern: "حديث", classic: "كلاسيكي", creative: "إبداعي", accentColor: "اللون الأساسي", font: "الخط", actions: "إجراءات", downloadPDF: "تحميل PDF", preview: "معاينة حية", language: "اللغة" }
         };
 
-        let photoDataUrl = '', debounceTimer;
-
-        const E = (tag, attr = {}, children = []) => {
-            const el = document.createElement(tag);
-            Object.entries(attr).forEach(([key, value]) => el.setAttribute(key, value));
-            children.forEach(child => {
-                if(child) el.appendChild(typeof child === 'string' ? document.createTextNode(child) : child);
-            });
-            return el;
-        };
-        
-        const getCurrentLang = () => dom.langSwitcher.value;
-        
-        const setLanguage = (lang) => {
-            document.documentElement.lang = lang;
-            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-            
-            document.querySelectorAll('[data-i18n-key]').forEach(el => {
-                const key = el.getAttribute('data-i18n-key');
-                if (translations[key]?.[lang]) {
-                    const icon = el.querySelector('svg');
-                    Array.from(el.childNodes).forEach(node => {
-                        if (node.nodeType === 3) node.remove();
-                    });
-                    if (icon) {
-                        el.appendChild(document.createTextNode(` ${translations[key][lang]}`));
-                    } else {
-                        el.textContent = translations[key][lang];
-                    }
-                }
-            });
-
-            document.querySelectorAll('[data-i18n-placeholder-key]').forEach(el => {
-                const key = el.getAttribute('data-i18n-placeholder-key');
-                 if (translations[key]?.[lang]) { el.placeholder = translations[key][lang]; }
-            });
-            
-            populateTemplateGrid(lang);
-            localStorage.setItem('cvBuilderLang', lang);
-            debouncedUpdate();
+        // --- Initial Data ---
+        const initialCvData = {
+            personalInfo: { fullName: "kaced hamza", jobTitle: "Senior Web Developer", email: "john.doe@example.com", phone: "+1 234 567 890", address: "New York, USA", profileImage: "", summary: "Highly skilled and motivated Senior Web Developer with over 8 years of experience in creating responsive and user-friendly web applications. Proficient in React, Node.js, and modern JavaScript frameworks. Seeking to leverage my expertise to build innovative solutions." },
+            experience: [ { id: 1, jobTitle: "Senior Web Developer", employer: "Tech Solutions Inc", dateFrom: "2020-01", dateTo: "", description: "Led a team of developers in creating a new e-commerce platform. Improved performance by 30% and user engagement by 15%." }],
+            education: [ { id: 1, institution: "University of Technology", degree: "M.Sc. in Computer Science", dateFrom: "2016-05", dateTo: "2014-09" } ],
+            skills: [ { id: 1, name: "React & Redux" } ]
         };
 
-        const populateTemplateGrid = (lang) => {
-            dom.templateGrid.innerHTML = '';
-            templates.forEach(template => {
-                const name = translations[template.nameKey]?.[lang] || template.nameKey;
-                const thumb = E('div', { class: 'template-thumbnail', 'data-template': template.id }, [
-                    E('img', { src: template.thumb, alt: name }),
-                    E('span', {}, [name])
-                ]);
-                thumb.addEventListener('click', () => {
-                    document.querySelectorAll('.template-thumbnail').forEach(t => t.classList.remove('selected'));
-                    thumb.classList.add('selected');
-                    dom.cvTemplate.className = template.id;
-                    document.getElementById('editor-page').classList.add('active');
-                    document.getElementById('template-selection-page').classList.remove('active');
-                    debouncedUpdate();
-                });
-                dom.templateGrid.appendChild(thumb);
-            });
-        };
-
-        const getFormData = () => {
-            const getDynamicSectionData = (containerId, fields) => {
-                return Array.from(document.querySelectorAll(`#${containerId} .dynamic-section`)).map(el => {
-                    const item = {};
-                    fields.forEach(field => {
-                        item[field] = el.querySelector(`[data-type="${field}"]`).value;
-                    });
-                    return item;
-                });
-            };
-
-            return {
-                name: document.getElementById('name').value,
-                title: document.getElementById('title').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                address: document.getElementById('address').value,
-                summary: document.getElementById('summary').value,
-                skills: document.getElementById('skills').value,
-                photo: photoDataUrl,
-                template: dom.cvTemplate.className,
-                primaryColor: document.getElementById('primary-color').value,
-                font: document.getElementById('font-select').value,
-                cvLang: dom.cvLangSelect.value,
-                experiences: getDynamicSectionData('experience-section', ['jobTitle', 'company', 'dates', 'desc']),
-                educations: getDynamicSectionData('education-section', ['degree', 'university', 'edu_dates']),
-                projects: getDynamicSectionData('project-section', ['projectName', 'projectDesc']),
-                languages: getDynamicSectionData('language-section', ['lang', 'level']),
-            };
-        };
-        
-        const saveDataToLocalStorage = () => {
-            const data = getFormData();
-            localStorage.setItem('cvFormData', JSON.stringify(data));
-        };
-        
-        const loadDataFromLocalStorage = () => {
-            const savedData = localStorage.getItem('cvFormData');
-            if (!savedData) return;
-            const data = JSON.parse(savedData);
-
-            document.getElementById('name').value = data.name || '';
-            document.getElementById('title').value = data.title || '';
-            document.getElementById('phone').value = data.phone || '';
-            document.getElementById('email').value = data.email || '';
-            document.getElementById('address').value = data.address || '';
-            document.getElementById('summary').value = data.summary || '';
-            document.getElementById('skills').value = data.skills || '';
-            
-            dom.cvTemplate.className = data.template || 'template-classic';
-            document.getElementById('primary-color').value = data.primaryColor || '#2c5282';
-            document.getElementById('font-select').value = data.font || "'IBM Plex Sans Arabic', sans-serif";
-            dom.cvLangSelect.value = data.cvLang || 'ar';
-            
-            if (data.photo) {
-                photoDataUrl = data.photo;
-                document.getElementById('photo-preview').src = photoDataUrl;
-                document.getElementById('photo-preview-container').style.display = 'block';
-            }
-
-            if (data.experiences) data.experiences.forEach(item => addExperience(item));
-            if (data.educations) data.educations.forEach(item => addEducation(item));
-            if (data.projects) data.projects.forEach(item => addProject(item));
-            if (data.languages) data.languages.forEach(item => addLanguage(item));
-
-            debouncedUpdate();
-        };
-
-        const debouncedUpdate = () => { 
-            clearTimeout(debounceTimer); 
-            debounceTimer = setTimeout(() => {
-                updatePreview();
-                saveDataToLocalStorage();
-            }, 300); 
-        };
-
-        const updatePreview = () => {
-            const data = getFormData();
-            const cvLang = data.cvLang;
-
-            dom.cvTemplate.innerHTML = '';
-            dom.cvTemplate.style.direction = cvLang === 'ar' ? 'rtl' : 'ltr';
-            document.documentElement.style.setProperty('--primary-color', data.primaryColor);
-            dom.cvTemplate.style.fontFamily = data.font;
-
-            const getSection = (key, iconName, contentFactory) => {
-                const content = contentFactory();
-                if (!content || (Array.isArray(content) && content.length === 0)) return null;
-                if(Array.isArray(content) && content.every(c => c === null || c.textContent.trim() === '')) return null;
-
-                const h3 = E('h3', {}, [
-                    E('svg', {class: 'icon'}, [E('use', {'xlink:href': `#icon-${iconName}`})]),
-                    E('span', {}, [` ${translations[key][cvLang]}`])
-                ]);
-                return E('div', { class: `cv-section ${iconName}`}, [h3, ...content]);
-            };
-
-            const profilePic = data.photo ? E('img', { src: data.photo, class: 'profile-pic' }) : null;
-            const contactInfo = E('div', { class: 'contact-info' }, [ E('p', {}, [data.phone]), E('p', {}, [data.email]), E('p', {}, [data.address]) ]);
-            const header = E('header', { class: 'cv-header' }, [ E('h1', {}, [data.name || ' ']), E('p', { class: 'title' }, [data.title || ' ']) ]);
-            
-            const summarySection = getSection('summarySectionTitle', 'summary', () => data.summary ? [E('p',{}, [data.summary])] : []);
-            const expSection = getSection('experienceSectionTitle', 'experience', () => data.experiences.map(exp => exp.jobTitle ? E('div', { class: 'entry' }, [ E('h4', {}, [E('strong', {}, [exp.jobTitle]), ` - ${exp.company}`]), E('p', { class: 'dates' }, [exp.dates]), E('p', {}, [exp.desc]) ]) : null));
-            const eduSection = getSection('educationSectionTitle', 'education', () => data.educations.map(edu => edu.degree ? E('div', { class: 'entry' }, [ E('h4', {}, [E('strong', {}, [edu.degree]), ` - ${edu.university}`]), E('p', { class: 'dates' }, [edu.edu_dates]) ]) : null));
-            const projSection = getSection('projectsSectionTitle', 'projects', () => data.projects.map(proj => proj.projectName ? E('div', { class: 'entry' }, [ E('h4', {}, [E('strong', {}, [proj.projectName])]), E('p', {}, [proj.projectDesc]) ]) : null));
-            const skillsSection = getSection('skillsSectionTitle', 'skills', () => { const skills = data.skills.split(',').map(s => s.trim()).filter(Boolean); return skills.length > 0 ? [E('ul', {}, skills.map(skill => E('li', {}, [skill])))] : []; });
-            const langSection = getSection('languagesSectionTitle', 'languages', () => data.languages.length > 0 ? [E('ul', {}, data.languages.map(lang => lang.lang ? E('li', {}, [`${lang.lang}: ${lang.level}`]) : null))] : []);
-            
-            const layout = {
-                'template-modern': () => dom.cvTemplate.append( E('div', { class: 'cv-sidebar' }, [profilePic, E('h3', {}, [translations.contactSectionTitle[cvLang]]), contactInfo, skillsSection, langSection]), E('div', { class: 'cv-main' }, [header, summarySection, expSection, eduSection, projSection]) ),
-                'template-classic': () => dom.cvTemplate.append(header, contactInfo, summarySection, expSection, eduSection, projSection, skillsSection, langSection)
-            };
-            (layout[dom.cvTemplate.className] || layout['template-classic'])();
-        };
-
-        const addSection = (type, fieldsFactory, data = {}) => {
-            const container = document.getElementById(`${type}-section`);
-            const removeBtn = E('button', { class: 'remove-btn', type: 'button', 'aria-label': `Remove ${type}` }, ['×']);
-            const newSection = E('div', { class: 'dynamic-section' }, [removeBtn, ...fieldsFactory(getCurrentLang())]);
-            
-            removeBtn.onclick = () => { newSection.remove(); debouncedUpdate(); };
-            
-            Object.keys(data).forEach(key => {
-                const input = newSection.querySelector(`[data-type="${key}"]`);
-                if(input) input.value = data[key];
-            });
-
-            container.appendChild(newSection);
-            debouncedUpdate();
+        // --- Template Components (FINAL BIDI & RESPONSIVE FIX) ---
+        const TemplateRenderer = ({ data, customization, t, language }) => {
+            let TemplateComponent;
+            if (customization.template === 'classic') TemplateComponent = ClassicTemplate;
+            else if (customization.template === 'creative') TemplateComponent = CreativeTemplate;
+            else TemplateComponent = ModernTemplate;
+            return <TemplateComponent data={data} customization={customization} t={t} language={language} />;
         }
         
-        const addExperience = (data) => addSection('experience', (lang) => [
-            E('div', { class: 'form-group' }, [E('label', {}, [translations.jobTitleLabel[lang]]), E('input', { type: 'text', 'data-type': 'jobTitle'})]),
-            E('div', { class: 'form-group' }, [E('label', {}, [translations.companyLabel[lang]]), E('input', { type: 'text', 'data-type': 'company'})]),
-            E('div', { class: 'form-group' }, [E('label', {}, [translations.datesLabel[lang]]), E('input', { type: 'text', 'data-type': 'dates'})]),
-            E('div', { class: 'form-group' }, [E('label', {}, [translations.descriptionLabel[lang]]), E('textarea', { 'data-type': 'desc', rows: '3' })])
-        ], data);
+        const ModernTemplate = ({ data, customization, t, language }) => {
+            const isRTL = language === 'ar';
+            return (
+                <div className="bg-white text-black p-6 md:p-8 text-sm" style={{ fontFamily: customization.font }}>
+                    <header className="text-center pb-6 border-b-2" style={{ borderColor: customization.primaryColor }}>
+                        {data.personalInfo.profileImage && ( <div className="mb-4"> <img src={data.personalInfo.profileImage} alt="Profile" className="w-24 h-24 rounded-full mx-auto object-cover shadow-md" /> </div> )}
+                        <h1 className="text-xl md:text-2xl font-bold tracking-tight break-words">{data.personalInfo.fullName}</h1>
+                        <h2 className="text-lg font-medium mt-1 break-words" style={{ color: customization.primaryColor }}>{data.personalInfo.jobTitle}</h2>
+                        <div className="flex justify-center items-center flex-col space-y-2 mt-4 text-xs text-gray-600">
+                            <p dir="ltr"><i className="fas fa-envelope mr-2" style={{ color: customization.primaryColor }}></i>{data.personalInfo.email}</p>
+                            <p dir="ltr"><i className="fas fa-phone-alt mr-2" style={{ color: customization.primaryColor }}></i>{data.personalInfo.phone}</p>
+                            <p dir="ltr"><i className="fas fa-map-marker-alt mr-2" style={{ color: customization.primaryColor }}></i>{data.personalInfo.address}</p>
+                        </div>
+                    </header>
+                    <main className="mt-6">
+                        <section className="mb-6"> <h3 className={`text-md font-bold uppercase tracking-wider mb-2 border-b pb-1 ${isRTL ? 'text-right' : 'text-left'}`} style={{ color: customization.primaryColor, borderColor: '#eee' }}>{t.summary}</h3> <p className="text-gray-700 text-xs leading-relaxed break-words text-left" dir="auto">{data.personalInfo.summary}</p> </section>
+                        <section className="mb-6">
+                            <h3 className={`text-md font-bold uppercase tracking-wider mb-2 border-b pb-1 ${isRTL ? 'text-right' : 'text-left'}`} style={{ color: customization.primaryColor, borderColor: '#eee' }}>{t.experience}</h3>
+                            {data.experience.map(exp => (
+                                <div key={exp.id} className={`mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                                    <div className={`flex flex-col sm:flex-row sm:justify-between items-start sm:items-baseline ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
+                                        <h4 className="text-sm font-semibold break-words">{exp.jobTitle} at {exp.employer}</h4>
+                                        <p className="text-xs text-gray-500 flex-shrink-0 sm:px-2">{exp.dateFrom} - {exp.dateTo || t.present}</p>
+                                    </div>
+                                    <p className="text-gray-700 text-xs mt-1 break-words text-left" dir="auto">{exp.description}</p>
+                                </div>
+                            ))}
+                        </section>
+                        <section className="mb-6">
+                             <h3 className={`text-md font-bold uppercase tracking-wider mb-2 border-b pb-1 ${isRTL ? 'text-right' : 'text-left'}`} style={{ color: customization.primaryColor, borderColor: '#eee' }}>{t.education}</h3>
+                            {data.education.map(edu => (
+                                <div key={edu.id} className={`mb-3 ${isRTL ? 'text-right' : 'text-left'}`}>
+                                    <div className={`flex flex-col sm:flex-row sm:justify-between items-start sm:items-baseline ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
+                                        <h4 className="text-sm font-semibold break-words">{edu.degree}</h4>
+                                        <p className="text-xs text-gray-500 sm:px-2">{edu.dateFrom} - {edu.dateTo}</p>
+                                    </div>
+                                    <p className="text-xs text-gray-500 italic break-words">{edu.institution}</p>
+                                </div>
+                            ))}
+                        </section>
+                        <section>
+                            <h3 className={`text-md font-bold uppercase tracking-wider mb-3 border-b pb-1 ${isRTL ? 'text-right' : 'text-left'}`} style={{ color: customization.primaryColor, borderColor: '#eee' }}>{t.skills}</h3>
+                            <div className={`flex flex-wrap ${isRTL ? 'justify-end' : 'justify-start'}`}> {data.skills.map(skill => ( <span key={skill.id} className={`text-xs text-white py-1 px-3 rounded-full mb-2 ${isRTL ? 'ml-2' : 'mr-2'}`} style={{ backgroundColor: customization.primaryColor }}> {skill.name} </span> ))} </div>
+                        </section>
+                    </main>
+                </div>
+            );
+        }
 
-        const addEducation = (data) => addSection('education', (lang) => [
-            E('div', { class: 'form-group' }, [E('label', {}, [translations.degreeLabel[lang]]), E('input', { type: 'text', 'data-type': 'degree' })]),
-            E('div', { class: 'form-group' }, [E('label', {}, [translations.universityLabel[lang]]), E('input', { type: 'text', 'data-type': 'university' })]),
-            E('div', { class: 'form-group' }, [E('label', {}, [translations.eduDatesLabel[lang]]), E('input', { type: 'text', 'data-type': 'edu_dates' })])
-        ], data);
+        const ClassicTemplate = ({ data, customization, t, language }) => {
+            const isRTL = language === 'ar';
+            return (
+                 <div className={`bg-white text-black flex flex-col md:flex-row text-sm ${isRTL ? 'md:flex-row-reverse' : ''}`} style={{ fontFamily: customization.font, minHeight: '100%' }}>
+                     <aside className="w-full md:w-1/3 p-6" style={{ backgroundColor: '#f4f4f4' }}>
+                        {data.personalInfo.profileImage && ( <div className="flex justify-center mb-4"> <img src={data.personalInfo.profileImage} alt="Profile" className="w-24 h-24 rounded-full object-cover shadow-lg border-4 border-white" /> </div> )}
+                        <h1 className="text-xl font-bold text-center break-words" style={{ color: customization.primaryColor }}>{data.personalInfo.fullName}</h1>
+                        <h2 className="text-md font-medium mt-1 text-gray-700 text-center break-words">{data.personalInfo.jobTitle}</h2>
+                        <div className="mt-6">
+                             <h3 className={`text-sm font-bold uppercase tracking-wider mb-3 ${isRTL ? 'text-right' : ''}`} style={{ color: customization.primaryColor }}>{t.personalInfo}</h3>
+                             <div className="text-xs text-gray-600 space-y-2 text-left" dir="ltr">
+                                <p className="flex items-center"><i className="fas fa-envelope fa-fw mr-2"></i> {data.personalInfo.email}</p>
+                                <p className="flex items-center"><i className="fas fa-phone-alt fa-fw mr-2"></i> {data.personalInfo.phone}</p>
+                                <p className="flex items-center"><i className="fas fa-map-marker-alt fa-fw mr-2"></i> {data.personalInfo.address}</p>
+                             </div>
+                        </div>
+                        <div className="mt-6">
+                             <h3 className={`text-sm font-bold uppercase tracking-wider mb-3 ${isRTL ? 'text-right' : ''}`} style={{ color: customization.primaryColor }}>{t.skills}</h3>
+                             <ul className={`text-xs text-gray-700 space-y-1 ${isRTL ? 'text-right' : 'text-left'}`}> {data.skills.map(skill => <li key={skill.id} className="break-words">{skill.name}</li>)} </ul>
+                        </div>
+                    </aside>
+                    <main className="w-full md:w-2/3 p-6">
+                        <section className="mb-6"> <h3 className={`text-lg font-bold uppercase tracking-wider pb-2 mb-4 border-b-2 ${isRTL ? 'text-right' : ''}`} style={{ borderColor: customization.primaryColor }}>{t.summary}</h3> <p className="text-gray-700 text-xs leading-relaxed break-words text-left" dir="auto">{data.personalInfo.summary}</p> </section>
+                        <section className="mb-6">
+                            <h3 className={`text-lg font-bold uppercase tracking-wider pb-2 mb-4 border-b-2 ${isRTL ? 'text-right' : ''}`} style={{ borderColor: customization.primaryColor }}>{t.experience}</h3>
+                            {data.experience.map(exp => (
+                                <div key={exp.id} className={`mb-5 ${isRTL ? 'text-right' : 'text-left'}`}>
+                                    <div className={`flex flex-col sm:flex-row sm:justify-between items-start sm:items-baseline ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
+                                        <h4 className="text-sm font-semibold text-gray-800 break-words">{exp.jobTitle}</h4>
+                                        <p className="text-xs text-gray-500 sm:px-2">{exp.dateFrom} - {exp.dateTo || t.present}</p>
+                                    </div>
+                                    <p className={`text-xs text-gray-500 italic mb-1 break-words`}>{exp.employer}</p>
+                                    <p className="text-gray-700 text-xs break-words text-left" dir="auto">{exp.description}</p>
+                                </div>
+                            ))}
+                        </section>
+                        <section>
+                            <h3 className={`text-lg font-bold uppercase tracking-wider pb-2 mb-4 border-b-2 ${isRTL ? 'text-right' : ''}`} style={{ borderColor: customization.primaryColor }}>{t.education}</h3>
+                            {data.education.map(edu => (
+                                <div key={edu.id} className={`mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                                    <div className={`flex flex-col sm:flex-row sm:justify-between items-start sm:items-baseline ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
+                                        <h4 className="text-sm font-semibold text-gray-800 break-words">{edu.degree}</h4>
+                                        <p className="text-xs text-gray-500 sm:px-2">{edu.dateFrom} - {edu.dateTo}</p>
+                                    </div>
+                                    <p className={`text-xs text-gray-500 italic break-words`}>{edu.institution}</p>
+                                </div>
+                            ))}
+                        </section>
+                    </main>
+                 </div>
+            );
+        }
 
-        const addProject = (data) => addSection('project', (lang) => [
-            E('div', { class: 'form-group' }, [E('label', {}, [translations.projectNameLabel[lang]]), E('input', { type: 'text', 'data-type': 'projectName' })]),
-            E('div', { class: 'form-group' }, [E('label', {}, [translations.descriptionLabel[lang]]), E('textarea', { 'data-type': 'projectDesc', rows: '3' })])
-        ], data);
+        const CreativeTemplate = ({ data, customization, t, language }) => {
+            const isRTL = language === 'ar';
+            return (
+                <div className="bg-white text-black" style={{ fontFamily: customization.font, minHeight: '100%' }}>
+                    <header className={`p-6 md:p-8 text-white flex flex-col md:flex-row items-center justify-between text-center md:text-left ${isRTL ? 'md:flex-row-reverse' : ''}`} style={{ backgroundColor: customization.primaryColor }}>
+                        <div className={`${isRTL ? 'md:text-right' : 'md:text-left'}`}>
+                            <h1 className="text-xl md:text-2xl font-bold tracking-tight break-words">{data.personalInfo.fullName}</h1>
+                            <h2 className="text-lg font-light mt-1 break-words">{data.personalInfo.jobTitle}</h2>
+                        </div>
+                        <div className="text-xs mt-4 md:mt-0 text-center" dir="ltr">
+                            <p>{data.personalInfo.email}</p> <p>{data.personalInfo.phone}</p> <p>{data.personalInfo.address}</p>
+                        </div>
+                    </header>
+                    <main className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 md:p-8">
+                        <div className={`md:col-span-1 ${isRTL ? 'md:order-last' : ''}`}>
+                             <div className="relative h-16 mb-4">
+                                 {data.personalInfo.profileImage && <img src={data.personalInfo.profileImage} alt="Profile" className="absolute bottom-0 left-1/2 -translate-x-1/2 w-28 h-28 md:w-32 md:h-32 rounded-full object-cover shadow-lg" style={{ border: `5px solid ${customization.primaryColor}` }} />}
+                            </div>
+                            <section> <h3 className={`text-md font-bold uppercase tracking-wider mb-4 ${isRTL ? 'text-right' : ''}`} style={{ color: customization.primaryColor }}>{t.skills}</h3> <div className="space-y-3"> {data.skills.map(skill => ( <div key={skill.id} className={`${isRTL ? 'text-right' : 'text-left'}`}> <p className="text-xs font-medium text-gray-700">{skill.name}</p> <div className="bg-gray-200 rounded-full h-1.5 mt-1"> <div className="h-1.5 rounded-full" style={{ width: '85%', backgroundColor: customization.primaryColor }}></div> </div> </div> ))} </div> </section>
+                            <section className="mt-6"> <h3 className={`text-md font-bold uppercase tracking-wider mb-4 ${isRTL ? 'text-right' : ''}`} style={{ color: customization.primaryColor }}>{t.education}</h3> {data.education.map(edu => ( <div key={edu.id} className={`mb-4 ${isRTL ? 'text-right' : ''}`}> <h4 className="text-sm font-semibold break-words">{edu.degree}</h4> <p className="text-xs text-gray-500 break-words">{edu.institution}</p> <p className="text-xs text-gray-400">{edu.dateFrom} - {edu.dateTo}</p> </div> ))} </section>
+                        </div>
+                        <div className={`md:col-span-2 ${isRTL ? 'md:order-first' : ''}`}>
+                            <section className="mb-6"> <h3 className={`text-md font-bold uppercase tracking-wider mb-3 ${isRTL ? 'text-right' : ''}`} style={{ color: customization.primaryColor }}>{t.summary}</h3> <p className="text-gray-700 text-xs leading-relaxed break-words text-left" dir="auto">{data.personalInfo.summary}</p> </section>
+                            <section> <h3 className={`text-md font-bold uppercase tracking-wider mb-3 ${isRTL ? 'text-right' : ''}`} style={{ color: customization.primaryColor }}>{t.experience}</h3> {data.experience.map(exp => ( <div key={exp.id} className={`mb-5 relative ${isRTL ? 'pr-4 text-right' : 'pl-4 text-left'}`}> <div className={`absolute top-1 h-2 w-2 rounded-full ${isRTL ? 'right-0' : 'left-0'}`} style={{backgroundColor: customization.primaryColor}}></div> <div className={`absolute top-1 h-full w-px bg-gray-200 ${isRTL ? 'right-1' : 'left-1'}`}></div> <p className="text-xs text-gray-500 mb-1">{exp.dateFrom} - {exp.dateTo || t.present}</p> <h4 className="text-sm font-semibold break-words">{exp.jobTitle} at {exp.employer}</h4> <p className="text-gray-700 text-xs mt-1 break-words text-left" dir="auto">{exp.description}</p> </div> ))} </section>
+                        </div>
+                    </main>
+                </div>
+            );
+        }
+        
+        // --- UI Components ---
+        const Input = ({ label, ...props }) => ( <div> <label className="text-sm font-medium text-[var(--text-secondary)] block mb-1.5">{label}</label> <input {...props} className="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded-md shadow-sm focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)] transition"/> </div> );
+        const Textarea = ({ label, ...props }) => ( <div> <label className="text-sm font-medium text-[var(--text-secondary)] block mb-1.5">{label}</label> <textarea {...props} rows="4" className="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded-md shadow-sm focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)] transition"></textarea> </div> );
+        const Card = ({ title, icon, children }) => ( <div className="bg-[var(--secondary-bg)] p-4 sm:p-6 rounded-xl border border-[var(--border-color)] shadow-sm mb-6 fade-in"> <div className="flex items-center mb-4"> <i className={`${icon} text-[var(--primary)] text-xl mx-2`}></i> <h3 className="text-lg font-bold text-[var(--text-primary)]">{title}</h3> </div> {children} </div> );
 
-        const addLanguage = (data) => addSection('language', (lang) => [
-            E('div', { class: 'form-group' }, [E('label', {}, [translations.languageLabel[lang]]), E('input', { type: 'text', 'data-type': 'lang' })]),
-            E('div', { class: 'form-group' }, [E('label', {}, [translations.levelLabel[lang]]), E('select', { 'data-type': 'level' }, [ E('option', {value: 'Beginner'}, ['Beginner']), E('option', {value: 'Intermediate'}, ['Intermediate']), E('option', {value: 'Advanced'}, ['Advanced']), E('option', {value: 'Native'}, ['Native']), ])])
-        ], data);
+        function App() {
+            // --- State & Handlers ---
+            const [cvData, setCvData] = useState(() => JSON.parse(localStorage.getItem('cvData')) || initialCvData);
+            const [language, setLanguage] = useState('ar');
+            const [customization, setCustomization] = useState(() => JSON.parse(localStorage.getItem('customization')) || { primaryColor: '#3B82F6', font: 'Inter', template: 'modern' });
+            const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+            const [isZoomed, setIsZoomed] = useState(false);
+            const t = translations[language];
 
-        function setupEventListeners() {
-            dom.form.addEventListener('input', debouncedUpdate);
-            dom.langSwitcher.addEventListener('change', (e) => setLanguage(e.target.value));
+            useEffect(() => { localStorage.setItem('cvData', JSON.stringify(cvData)); }, [cvData]);
+            useEffect(() => { localStorage.setItem('customization', JSON.stringify(customization)); document.documentElement.style.setProperty('--primary', customization.primaryColor); }, [customization]);
+            useEffect(() => { document.documentElement.lang = language; document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr'; }, [language]);
+
+            const handlePersonalInfoChange = e => setCvData(p => ({ ...p, personalInfo: { ...p.personalInfo, [e.target.name]: e.target.value } }));
+            const handleImageChange = e => { if (e.target.files[0]) { const r = new FileReader(); r.onloadend = () => setCvData(p => ({...p, personalInfo: { ...p.personalInfo, profileImage: r.result }})); r.readAsDataURL(e.target.files[0]); } };
+            const handleSectionChange = (sec, i, e) => { const list = [...cvData[sec]]; list[i][e.target.name] = e.target.value; setCvData(p => ({ ...p, [sec]: list })); };
+            const addSectionItem = (sec) => { const newItem = { id: Date.now(), jobTitle: "", employer: "", dateFrom: "", dateTo: "", description: "", institution: "", degree: "", name: "" }; setCvData(p => ({ ...p, [sec]: [...p[sec], newItem] })); };
+            const removeSectionItem = (sec, id) => setCvData(p => ({ ...p, [sec]: p[sec].filter(item => item.id !== id) }));
+            const handleCustomizationChange = e => setCustomization(p => ({ ...p, [e.target.name]: e.target.value }));
             
-            document.getElementById('back-to-templates').addEventListener('click', () => {
-                 document.getElementById('editor-page').classList.remove('active');
-                 document.getElementById('template-selection-page').classList.add('active');
-            });
+            // FINAL PDF GENERATION FIX with RTL support
+            const generatePdf = async () => {
+                setIsGeneratingPdf(true);
+                const a4Container = document.createElement('div');
+                a4Container.style.position = 'absolute';
+                a4Container.style.left = '-9999px';
+                a4Container.style.top = '0';
+                a4Container.dir = language === 'ar' ? 'rtl' : 'ltr';
+                document.body.appendChild(a4Container);
 
-            document.getElementById('clear-form-btn').addEventListener('click', () => {
-                if(confirm(translations.clearForm[getCurrentLang()] + "?")) {
-                    localStorage.removeItem('cvFormData');
-                    window.location.reload();
-                }
-            });
+                ReactDOM.render(
+                    <div style={{ width: '210mm', height: '297mm' }}>
+                        <TemplateRenderer data={cvData} customization={customization} t={t} language={language} />
+                    </div>,
+                    a4Container
+                );
 
-            document.querySelector('[data-action="add-experience"]').addEventListener('click', () => addExperience());
-            document.querySelector('[data-action="add-education"]').addEventListener('click', () => addEducation());
-            document.querySelector('[data-action="add-project"]').addEventListener('click', () => addProject());
-            document.querySelector('[data-action="add-language"]').addEventListener('click', () => addLanguage());
-            
-            document.getElementById('photo').addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        photoDataUrl = event.target.result;
-                        document.getElementById('photo-preview').src = photoDataUrl;
-                        document.getElementById('photo-preview-container').style.display = 'block';
-                        document.getElementById('photo-upload-label').textContent = file.name;
-                        debouncedUpdate();
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
+                await new Promise(resolve => setTimeout(resolve, 200));
 
-            document.getElementById('remove-photo-btn').addEventListener('click', () => {
-                photoDataUrl = '';
-                document.getElementById('photo').value = '';
-                document.getElementById('photo-preview').src = '';
-                document.getElementById('photo-preview-container').style.display = 'none';
-                document.getElementById('photo-upload-label').textContent = translations.clickToUpload[getCurrentLang()];
-                debouncedUpdate();
-            });
-
-            // --- START: CORRECTED PDF DOWNLOAD CODE ---
-            document.getElementById('download-pdf').addEventListener('click', function () {
-                const downloadBtn = this;
-                downloadBtn.disabled = true;
-                downloadBtn.classList.add('loading');
+                const canvas = await html2canvas(a4Container.firstChild, { scale: 3, useCORS: true });
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+                pdf.save(`CV_${cvData.personalInfo.fullName.replace(/\s/g, '_')}.pdf`);
                 
-                const originalShadow = dom.cvTemplate.style.boxShadow;
-                dom.cvTemplate.style.boxShadow = 'none';
+                ReactDOM.unmountComponentAtNode(a4Container);
+                document.body.removeChild(a4Container);
+                setIsGeneratingPdf(false);
+            };
 
-                // Use improved settings for html2canvas for better accuracy
-                html2canvas(dom.cvTemplate, { 
-                    scale: 3, 
-                    useCORS: true, 
-                    logging: false,
-                    windowWidth: dom.cvTemplate.scrollWidth,
-                    windowHeight: dom.cvTemplate.scrollHeight
-                })
-                .then(canvas => {
-                    const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+            return (
+                <div>
+                    <header className="bg-[var(--secondary-bg)] shadow-sm px-4 sm:px-6 py-3 flex justify-between items-center sticky top-0 z-40 border-b border-[var(--border-color)]">
+                        <div className="flex items-center"> <i className="fas fa-file-invoice text-[var(--primary)] text-2xl"></i> <h1 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mx-2 sm:mx-3">{t.title}</h1> </div>
+                        <div className="flex items-center space-x-2 sm:space-x-4"> <select value={language} onChange={(e) => setLanguage(e.target.value)} className="bg-transparent font-medium text-sm text-[var(--text-secondary)] rounded-md p-2 focus:ring-2 focus:ring-[var(--primary)]"> <option value="en">English</option> <option value="ar">العربية</option> </select> <button onClick={generatePdf} disabled={isGeneratingPdf} className="bg-[var(--primary)] text-white font-semibold py-2 px-3 sm:px-4 rounded-lg hover:bg-[var(--primary-hover)] transition-all flex items-center disabled:bg-blue-300 text-sm"> {isGeneratingPdf ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-download sm:mr-2"></i>} <span className="hidden sm:inline">{t.downloadPDF}</span> </button> </div>
+                    </header>
                     
-                    const imgData = canvas.toDataURL('image/png', 1.0);
-                    
-                    // Calculate the aspect ratio to maintain proportions
-                    const pdfWidth = pdf.internal.pageSize.getWidth(); // A4 width in mm
-                    const canvasAspectRatio = canvas.height / canvas.width;
-                    const pdfHeight = pdfWidth * canvasAspectRatio;
+                    <main className="flex flex-col lg:flex-row">
+                        <div className="w-full lg:w-1/2 p-4 lg:p-6 lg:overflow-y-auto lg:h-[calc(100vh-68px)]">
+                             <Card title={t.customization} icon="fas fa-paint-brush"> <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> <div> <label className="text-sm font-medium text-[var(--text-secondary)] block mb-1.5">{t.template}</label> <select name="template" value={customization.template} onChange={handleCustomizationChange} className="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded-md shadow-sm focus:ring-2 focus:ring-[var(--primary)]"> <option value="modern">{t.modern}</option> <option value="classic">{t.classic}</option> <option value="creative">{t.creative}</option> </select> </div> <div> <label className="text-sm font-medium text-[var(--text-secondary)] block mb-1.5">{t.accentColor}</label> <input type="color" name="primaryColor" value={customization.primaryColor} onChange={handleCustomizationChange} className="w-full h-10 p-1 bg-white border border-gray-300 rounded-md cursor-pointer"/> </div> <div className="col-span-1 sm:col-span-2"> <label className="text-sm font-medium text-[var(--text-secondary)] block mb-1.5">{t.font}</label> <select name="font" value={customization.font} onChange={handleCustomizationChange} className="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded-md shadow-sm focus:ring-2 focus:ring-[var(--primary)]"> <option value="Inter">Inter (Modern)</option> <option value="Cairo">Cairo (Arabic)</option> </select> </div> </div> </Card>
+                             <Card title={t.personalInfo} icon="fas fa-user-circle"> <div className="space-y-4"> <div> <label className="text-sm font-medium text-[var(--text-secondary)] block mb-1.5">{t.profilePicture}</label> <input type="file" name="profileImage" accept="image/*" onChange={handleImageChange} className="w-full text-sm text-[var(--text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[var(--primary)] hover:file:bg-blue-100 transition cursor-pointer"/> </div> <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> <Input label={t.fullName} type="text" name="fullName" value={cvData.personalInfo.fullName} onChange={handlePersonalInfoChange}/> <Input label={t.jobTitle} type="text" name="jobTitle" value={cvData.personalInfo.jobTitle} onChange={handlePersonalInfoChange}/> </div> <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> <Input label={t.email} type="email" name="email" value={cvData.personalInfo.email} onChange={handlePersonalInfoChange}/> <Input label={t.phone} type="tel" name="phone" value={cvData.personalInfo.phone} onChange={handlePersonalInfoChange}/> </div> <Input label={t.address} type="text" name="address" value={cvData.personalInfo.address} onChange={handlePersonalInfoChange}/> <Textarea label={t.summary} name="summary" value={cvData.personalInfo.summary} onChange={handlePersonalInfoChange} placeholder={t.summaryPlaceholder}/> </div> </Card>
+                             <Card title={t.experience} icon="fas fa-briefcase"> <div className="space-y-4"> {cvData.experience.map((item, index) => ( <div key={item.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200 relative"> <button onClick={() => removeSectionItem('experience', item.id)} className="absolute top-3 right-3 rtl:left-3 rtl:right-auto text-gray-400 hover:text-red-500 transition-colors"><i className="fas fa-trash-alt"></i></button> <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2"> <Input label={t.jobTitle} type="text" name="jobTitle" value={item.jobTitle} onChange={(e) => handleSectionChange('experience', index, e)}/> <Input label={t.employer} type="text" name="employer" value={item.employer} onChange={(e) => handleSectionChange('experience', index, e)}/> </div> <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2"> <Input label={t.dateFrom} type="month" name="dateFrom" value={item.dateFrom} onChange={(e) => handleSectionChange('experience', index, e)}/> <Input label={t.dateTo} type="month" name="dateTo" value={item.dateTo} onChange={(e) => handleSectionChange('experience', index, e)}/> </div> <Textarea label={t.description} name="description" value={item.description} onChange={(e) => handleSectionChange('experience', index, e)} /> </div> ))} </div> <button onClick={() => addSectionItem('experience')} className="mt-4 w-full text-[var(--primary)] font-semibold py-2 px-4 rounded-lg border-2 border-dashed border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-all flex items-center justify-center"> <i className="fas fa-plus mx-2"></i> {t.addExperience} </button> </Card>
+                        </div>
 
-                    // Add the image to the PDF with the correct dimensions
-                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                    
-                    const fileName = (document.getElementById('name').value.trim() || 'CV').replace(/ /g, '_');
-                    pdf.save(`${fileName}.pdf`);
-                })
-                .catch(err => {
-                    console.error("PDF generation failed:", err);
-                    alert("حدث خطأ أثناء إنشاء ملف PDF. يرجى المحاولة مرة أخرى.");
-                })
-                .finally(() => {
-                    dom.cvTemplate.style.boxShadow = originalShadow;
-                    downloadBtn.disabled = false;
-                    downloadBtn.classList.remove('loading');
-                });
-            });
-            // --- END: CORRECTED PDF DOWNLOAD CODE ---
+                        <div className="w-full lg:w-1/2 bg-gray-200 p-4 flex justify-center items-start lg:h-[calc(100vh-68px)]">
+                            <div className="cv-preview cursor-pointer" onClick={() => setIsZoomed(true)}>
+                                <TemplateRenderer data={cvData} customization={customization} t={t} language={language} />
+                            </div>
+                        </div>
+                    </main>
+
+                    {isZoomed && (
+                        <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-start overflow-auto z-50 p-4" onClick={() => setIsZoomed(false)} >
+                            <div className="bg-white rounded-lg shadow-2xl my-8 w-full max-w-4xl" onClick={(e) => e.stopPropagation()} >
+                               <TemplateRenderer data={cvData} customization={customization} t={t} language={language} />
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
         }
-        
-        const init = () => {
-            const savedLang = localStorage.getItem('cvBuilderLang') || 'ar';
-            dom.langSwitcher.value = savedLang;
-            
-            setupEventListeners();
-            loadDataFromLocalStorage();
-            setLanguage(savedLang);
-        };
 
-        init();
-    });
+        ReactDOM.render(<App />, document.getElementById('root'));
     </script>
+
 </body>
 </html>
